@@ -15,3 +15,4 @@
 //= require_tree .
 //= require rickshaw
 //= require d3
+//= require chartkick
