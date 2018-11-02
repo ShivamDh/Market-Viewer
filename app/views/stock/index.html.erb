@@ -1,6 +1,15 @@
 <h1 class="title">Market Viewer</h1>
 <h3 class="descrip"> View and analyze your favorite stocks</h3>
 
-<div class="chart-container">
-	<%= line_chart @data %>
+<div class="container">
+	<div class="chart">
+		<%= line_chart @data %>
+	</div>
+
+	<div class="table">
+		<div class="add-stock-input">
+			Add Stock: <input type="text" name="add-stock" />
+		</div>
+	</div>
 </div>
+
