@@ -2,10 +2,37 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+body {
+	min-width: 750px;
+}
+
 .title {
 	text-align: center;
 }
 
 .descrip {
 	text-align: center;
+}
+
+.chart-container {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 768px) {
+  .chart-container {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .chart-container {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .chart-container {
+    width: 1170px;
+  }
 }
