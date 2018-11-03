@@ -50,3 +50,4 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'chartkick'
+gem 'net_http_ssl_fix'

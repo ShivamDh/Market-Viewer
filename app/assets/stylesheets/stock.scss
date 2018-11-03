@@ -14,7 +14,7 @@ body {
 	text-align: center;
 }
 
-.chart-container {
+.container {
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
@@ -22,17 +22,22 @@ body {
 }
 
 @media (min-width: 768px) {
-  .chart-container {
+  .container {
     width: 750px;
   }
 }
 @media (min-width: 992px) {
-  .chart-container {
+  .container {
     width: 970px;
   }
 }
 @media (min-width: 1200px) {
-  .chart-container {
+  .container {
     width: 1170px;
   }
+}
+
+.add-stock-input {
+	text-align: right;
+	margin-right: 60px;
 }
