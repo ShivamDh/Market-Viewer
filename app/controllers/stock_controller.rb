@@ -1,6 +1,6 @@
 class StockController < ApplicationController
 	@@api_key = "GJW2HJK06R4D18XC"
-	@@stocks = []
+	@@stocks = ['TD']
 
 	def index
 		require 'net/http'
@@ -9,11 +9,27 @@ class StockController < ApplicationController
 		@data = []
 
 		begin
-			uri = URI('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=TD&apikey=GJW2HJK06R4D18XC')
-			resp = Net::HTTP.get(uri)
-			resp_json = JSON.parse(resp)
-			stock_data = resp_json["Time Series (Daily)"]
-			puts "done done"
+			@@stocks.each do |stock|
+			 	url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&apikey=GJW2HJK06R4D18XC&symbol=' + stock
+			 	puts url
+			 	uri = URI(url)
+				resp = Net::HTTP.get(uri)
+				resp_json = JSON.parse(resp)
+				stock_info = resp_json["Time Series (Daily)"]
+				chart_data = {}
+				chart_data['name'] = stock
+				chart_data['data'] = {}
+				stock_info.each do |key, val|
+					chart_data['data'][key] = val['4. close'].to_f
+				end
+				puts chart_data
+				@data.push(chart_data)
+				puts @data
+				puts "done done"
+				# @data = []
+
+			end
+			
 		rescue => e
 			puts "failed #{e}"
 		end
