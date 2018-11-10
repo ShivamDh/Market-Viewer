@@ -10,6 +10,8 @@ class StockController < ApplicationController
 		@max = 1
 		@min = 1
 
+		@table_data = []
+
 		begin
 			@@stocks.each do |stock|
 			 	url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&apikey=GJW2HJK06R4D18XC&symbol=' + stock
@@ -26,17 +28,25 @@ class StockController < ApplicationController
 				chart_keys.sort
 				last_key = chart_keys[-1]
 				base_val = stock_info[last_key]['4. close'].to_f
+
+				all_vol = 0
 				
 				stock_info.each do |key, val|
 					stock_value = val['4. close'].to_f / base_val
 					@max = stock_value > @max ? stock_value : @max
 					@min = stock_value < @min ? stock_value : @min
 					chart_data['data'][key] = stock_value
+					all_vol += val['5. volume'].to_f
 				end
 				
-				# puts chart_data
 				@data.push(chart_data)
-				# puts @data
+
+				begin
+					url_2 = 'https://query1.finance.yahoo.com/v1/finance/search?q=' + stock + '&quotesCount=1'
+				rescue => e2
+					puts "failed #{e2}"
+				end
+
 				puts "done done"
 
 			end

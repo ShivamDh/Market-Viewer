@@ -2,13 +2,30 @@
 <h3 class="descrip"> View and analyze your favorite stocks</h3>
 
 <div class="container">
+	<% if @data.length == 0 %>
+		<div class="warning">Unable to render the charts, please referesh in 60 seconds</div>
+	<% end %>
 	<div class="chart">
-		<%= line_chart @data %>
+		<%= line_chart @data, min: @min, max: @max%>
 	</div>
 
 	<div class="table">
 		<div class="add-stock-input">
 			Add Stock: <input type="text" name="add-stock" />
+		</div>
+		<div class="stock-table-div">
+			<table class="stock-table">
+				<tr>
+				    <th>Company</th>
+				    <th>Symbol</th>
+				    <th>Type</th>
+				    <th>Exchange</th>
+				    <th>Last Close Price</th>
+				    <th>Change (over )</th>
+				    <th>Last Volume</th>
+				    <th>Average Volume</th>
+				</tr>
+			</table>
 		</div>
 	</div>
 </div>

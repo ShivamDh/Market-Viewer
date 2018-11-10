@@ -39,5 +39,33 @@ body {
 
 .add-stock-input {
 	text-align: right;
-	margin-right: 60px;
+	margin-right: 31px;
+	padding-bottom: 15px;
+}
+
+.warning {
+	background: yellow;
+	width: fit-content;
+	margin: 0 auto;
+	padding: 5px 20px;
+}
+
+.stock-table-div {
+	padding: 0 30px;
+}
+
+.stock-table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
 }
