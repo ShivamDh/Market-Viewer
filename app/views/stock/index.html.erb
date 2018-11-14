@@ -25,6 +25,18 @@
 				    <th>Last Volume</th>
 				    <th>Average Volume</th>
 				</tr>
+				<% @table_data.each do |entry| %>
+					<tr>
+						<td><%= entry['company'] %></td>
+						<td><%= entry['symbol'] %></td>
+						<td><%= entry['type'] %></td>
+						<td><%= entry['exchange'] %></td>
+						<td><%= entry['close_price'] %></td>
+						<td><%= entry['change'] %></td>
+						<td><%= entry['last_vol'] %></td>
+						<td><%= entry['avg_vol'] %></td>
+					</tr>
+				<%end %>
 			</table>
 		</div>
 	</div>

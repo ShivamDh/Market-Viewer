@@ -43,6 +43,25 @@ class StockController < ApplicationController
 
 				begin
 					url_2 = 'https://query1.finance.yahoo.com/v1/finance/search?q=' + stock + '&quotesCount=1'
+					uri_2 = URI(url_2)
+					resp_2 = Net::HTTP.get(uri_2)
+					resp_json_2 = JSON.parse(resp_2)
+
+					stock_metadata = resp_json_2['quotes'][0]
+
+					table_info = {}
+					table_info['company'] = stock_metadata['shortname']
+					table_info['symbol'] = stock
+					table_info['type'] = stock_metadata['typeDisp']
+					table_info['exchange'] = stock_metadata['exchange']
+
+					first_key = chart_keys[0]
+					table_info['close_price'] = stock_info[first_key]['4. close']
+					table_info['change'] = (stock_info[first_key]['4. close'].to_f / base_val).round(4)
+					table_info['last_vol'] = stock_info[first_key]['5. volume']
+					table_info['avg_vol'] = all_vol / stock_info.length
+
+					@table_data.push(table_info)
 				rescue => e2
 					puts "failed #{e2}"
 				end
