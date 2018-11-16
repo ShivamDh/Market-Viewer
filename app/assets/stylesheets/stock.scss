@@ -15,26 +15,28 @@ body {
 }
 
 .container {
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  margin-left: auto;
+	padding-right: 15px;
+	padding-left: 15px;
+	margin-right: auto;
+	margin-left: auto;
 }
 
 @media (min-width: 768px) {
-  .container {
-    width: 750px;
-  }
+	.container {
+		width: 750px;
+	}
 }
+
 @media (min-width: 992px) {
-  .container {
-    width: 970px;
-  }
+	.container {
+		width: 970px;
+	}
 }
+
 @media (min-width: 1200px) {
-  .container {
-    width: 1170px;
-  }
+	.container {
+		width: 1170px;
+	}
 }
 
 .add-stock-input {
@@ -55,17 +57,33 @@ body {
 }
 
 .stock-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
+	font-family: arial, sans-serif;
+	border-collapse: collapse;
+	width: 100%;
 }
 
 td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
 }
 
 tr:nth-child(even) {
-  background-color: #dddddd;
+	background-color: #dddddd;
+}
+
+.close-icon {
+	cursor: pointer;
+	display:block;
+	box-sizing:border-box;
+	width:20px;
+	height:20px;
+	border-width:3px;
+	border-style: solid;
+	border-color:red;
+	border-radius:100%;
+	background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 46%, white 46%,  white 56%,transparent 56%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%,  white 56%,transparent 56%, transparent 100%);
+	background-color:red;
+	box-shadow:0px 0px 5px 2px rgba(0,0,0,0.5);
+	transition: all 0.3s ease;
 }
