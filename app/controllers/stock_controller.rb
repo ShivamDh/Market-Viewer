@@ -53,13 +53,12 @@ class StockController < ApplicationController
 					table_info['company'] = stock_metadata['shortname']
 					table_info['symbol'] = stock
 					table_info['type'] = stock_metadata['typeDisp']
-					table_info['exchange'] = stock_metadata['exchange']
 
 					first_key = chart_keys[0]
 					table_info['close_price'] = stock_info[first_key]['4. close']
 					table_info['change'] = (stock_info[first_key]['4. close'].to_f / base_val).round(4)
-					table_info['last_vol'] = stock_info[first_key]['5. volume']
-					table_info['avg_vol'] = all_vol / stock_info.length
+					table_info['last_vol'] = (stock_info[first_key]['5. volume'].to_f / 1000000).round(5)
+					table_info['avg_vol'] = (all_vol / (stock_info.length * 1000000)).round(5)
 
 					@table_data.push(table_info)
 				rescue => e2

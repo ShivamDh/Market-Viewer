@@ -6,7 +6,15 @@
 		<div class="warning">Unable to render the charts, please referesh in 60 seconds</div>
 	<% end %>
 	<div class="chart">
-		<%= line_chart @data, min: @min, max: @max%>
+		<%=
+			line_chart @data,
+			min: @min,
+			max: @max,
+			xtitle: "Time",
+			ytitle: "Relative Stock Price",
+			points: false,
+			refresh: 300
+		%>
 	</div>
 
 	<div class="table">
@@ -16,21 +24,24 @@
 		<div class="stock-table-div">
 			<table class="stock-table">
 				<tr>
+				    <th></th>
 				    <th>Company</th>
 				    <th>Symbol</th>
 				    <th>Type</th>
-				    <th>Exchange</th>
-				    <th>Last Close Price</th>
+				    <th>Last Price (USD)</th>
 				    <th>Change (over )</th>
-				    <th>Last Volume</th>
-				    <th>Average Volume</th>
+				    <th>Last Volume (M)</th>
+				    <th>Average Volume (M)</th>
 				</tr>
 				<% @table_data.each do |entry| %>
 					<tr>
+						<td>
+							<button class="close-icon">
+							</button>
+						</td>
 						<td><%= entry['company'] %></td>
 						<td><%= entry['symbol'] %></td>
 						<td><%= entry['type'] %></td>
-						<td><%= entry['exchange'] %></td>
 						<td><%= entry['close_price'] %></td>
 						<td><%= entry['change'] %></td>
 						<td><%= entry['last_vol'] %></td>
