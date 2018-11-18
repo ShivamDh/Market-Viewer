@@ -2,9 +2,12 @@
 <h3 class="descrip"> View and analyze your favorite stocks</h3>
 
 <div class="container">
-	<% if @data.length == 0 %>
+	<% if @error %>
 		<div class="warning">Unable to render the charts, please referesh in 60 seconds</div>
 	<% end %>
+  <% if @data.length == 0 %>
+    <div class="warning">No Stocks selected, add stocks to view using the input below</div>
+  <% end %>
 	<div class="chart">
 		<%=
 			line_chart @data,
@@ -36,8 +39,7 @@
 				<% @table_data.each do |entry| %>
 					<tr>
 						<td>
-							<button class="close-icon">
-							</button>
+							<%= button_to "", stock_path(entry['symbol']), class: 'close-icon' %>
 						</td>
 						<td><%= entry['company'] %></td>
 						<td><%= entry['symbol'] %></td>
