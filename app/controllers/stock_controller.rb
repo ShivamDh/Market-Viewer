@@ -1,12 +1,19 @@
 class StockController < ApplicationController
+  @@stocks = ['AAPL', 'BNS', 'MSFT', 'GOOG', 'BABA']
   @@stock_deleted = false
-  @@stocks = ['AAPL']
+  @@cache_data = []
+  @@cache_table_data = []
+  @@cache_max = 1
+  @@cache_min = 1
 
   def delete_stock()
     deleted_stock = params[:id]
     puts 'delete_stock func'
     puts deleted_stock
     deleted_index = @@stocks.index(deleted_stock)
+    @@stocks.delete_at(deleted_index)
+    @@cache_data.delete_at(deleted_index)
+    @@cache_table_data.delete_at(deleted_index)
     @@stock_deleted = true
     puts 'redirected'
     redirect_to action: 'index'
@@ -16,6 +23,7 @@ class StockController < ApplicationController
     require 'net/http'
     require 'json'
 
+    @error = false
     @data = []
     @max = 1
     @min = 1
@@ -24,6 +32,10 @@ class StockController < ApplicationController
 
     if @@stock_deleted
       @@stock_deleted = false
+      @data = @@cache_data
+      @table_data = @@cache_table_data
+      @max = @@cache_max
+      @min = @@cache_min
     else
       begin
         @@stocks.each do |stock|
@@ -53,6 +65,7 @@ class StockController < ApplicationController
           end
           
           @data.push(chart_data)
+          @@cache_data = @data
 
           begin
             url_2 = 'https://query1.finance.yahoo.com/v1/finance/search?q=' + stock + '&quotesCount=1'
@@ -75,20 +88,27 @@ class StockController < ApplicationController
 
             @table_data.push(table_info)
           rescue => e2
+            @error = true
             puts "failed #{e2}"
           end
+
+          @@cache_table_data = @table_data
 
           puts "done done"
 
         end
         
       rescue => e
+        @error = true
         puts "failed #{e}"
       end
-    end
 
-    @max += 0.05
-    @min -= 0.05
+      @max += 0.05
+      @min -= 0.05
+
+      @@cache_max = @max
+      @@cache_min = @min
+    end
 
     # @data = [{"name":"Data1","data":{"2013-02-10":3,"2013-02-17":3,"2013-02-24":3,"2013-03-03":1,"2013-03-10":4,"2013-03-17":3,"2013-03-24":2,"2013-03-31":3}},{"name":"Data2","data":{"2013-02-10":0,"2013-02-17":0,"2013-02-24":0,"2013-03-03":0,"2013-03-10":2,"2013-03-17":1,"2013-03-24":0,"2013-03-31":0}},{"name":"Data3","data":{"2013-02-10":0,"2013-02-17":1,"2013-02-24":0,"2013-03-03":0,"2013-03-10":0,"2013-03-17":1,"2013-03-24":0,"2013-03-31":1}},{"name":"Data4","data":{"2013-02-10":5,"2013-02-17":3,"2013-02-24":2,"2013-03-03":0,"2013-03-10":0,"2013-03-17":1,"2013-03-24":1,"2013-03-31":0}}]
   end
