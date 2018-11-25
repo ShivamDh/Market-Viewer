@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 
   root 'stock#index'
 
-  post 'stock/delete_stock/:id' => 'stock#delete_stock', as: 'stock'
+  post 'stock/delete_stock/:id' => 'stock#delete_stock', as: 'delete_stock'
+  post 'stock/add_stock/:id' => 'stock#add_stock', as: 'add_stock'
 
 end

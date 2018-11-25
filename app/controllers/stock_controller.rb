@@ -1,10 +1,17 @@
 class StockController < ApplicationController
-  @@stocks = ['AAPL', 'BNS', 'MSFT', 'GOOG', 'BABA']
+  @@stocks = ['BABA']
   @@stock_deleted = false
   @@cache_data = []
   @@cache_table_data = []
   @@cache_max = 1
   @@cache_min = 1
+
+  def add_stock()
+    add_stock = params[:id]
+    puts 'add_stock func'
+    puts add_stock
+    redirect_to action: 'index'
+  end
 
   def delete_stock()
     deleted_stock = params[:id]

@@ -40,9 +40,13 @@ body {
 }
 
 .add-stock-input {
-	text-align: right;
-	margin-right: 31px;
-	padding-bottom: 15px;
+	display: flex;
+	padding: 0 31px 15px 0;
+	justify-content: flex-end;
+
+	.add-icon {
+		
+	}
 }
 
 .warning {

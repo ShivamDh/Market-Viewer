@@ -22,7 +22,9 @@
 
   <div class="table">
     <div class="add-stock-input">
-      Add Stock: <input type="text" name="add-stock" />
+      Add Stock:
+      <input type="text" name="add-stock" />
+      <%= button_to "", add_stock_path('GOOG'), class: 'close-icon' %>
     </div>
     <div class="stock-table-div">
       <table class="stock-table">
@@ -39,7 +41,7 @@
         <% @table_data.each do |entry| %>
           <tr>
             <td>
-              <%= button_to "", stock_path(entry['symbol']), class: 'close-icon' %>
+              <%= button_to "", delete_stock_path(entry['symbol']), class: 'close-icon' %>
             </td>
             <td><%= entry['company'] %></td>
             <td><%= entry['symbol'] %></td>
