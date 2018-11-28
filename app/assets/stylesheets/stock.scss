@@ -43,9 +43,19 @@ body {
 	display: flex;
 	padding: 0 31px 15px 0;
 	justify-content: flex-end;
+	font-size: 20px;
 
 	.add-icon {
-		
+		background-color: blue; /* Green */
+		border: none;
+		color: white;
+		padding: 3px 10px;
+		margin-left: 5px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 18px;
+		cursor: pointer;
 	}
 }
 

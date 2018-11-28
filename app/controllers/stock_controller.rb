@@ -1,6 +1,7 @@
 class StockController < ApplicationController
-  @@stocks = ['BABA']
+  @@stocks = []
   @@stock_deleted = false
+  @@stock_added = false
   @@cache_data = []
   @@cache_table_data = []
   @@cache_max = 1
@@ -10,6 +11,9 @@ class StockController < ApplicationController
     add_stock = params[:id]
     puts 'add_stock func'
     puts add_stock
+    @@stocks.push(add_stock)
+    @@stock_added = true
+    puts 'redirected'
     redirect_to action: 'index'
   end
 
