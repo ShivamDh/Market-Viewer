@@ -11,6 +11,40 @@ class StockController < ApplicationController
     add_stock = params[:id]
     puts 'add_stock func'
     puts add_stock
+
+    begin
+      url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&apikey=GJW2HJK06R4D18XC&symbol=' + add_stock
+      uri = URI(url)
+      resp = Net::HTTP.get(uri)
+      resp_json = JSON.parse(resp)
+
+      stock_info = resp_json["Time Series (Daily)"]
+      chart_data = {}
+      chart_data['name'] = add_stock
+      chart_data['data'] = {}
+      
+      chart_keys = stock_info.keys
+      chart_keys.sort
+      last_key = chart_keys[-1]
+      base_val = stock_info[last_key]['4. close'].to_f
+
+      all_vol = 0
+      
+      stock_info.each do |key, val|
+        stock_value = val['4. close'].to_f / base_val
+        @@cache_max = stock_value > @@cache_max ? stock_value : @@cache_max
+        @@cache_min = stock_value < @@cache_min ? stock_value : @@cache_min
+        chart_data['data'][key] = stock_value
+        all_vol += val['5. volume'].to_f
+      end
+      
+      @@cached_data.push(chart_data)
+      puts "done adding"
+    rescue => e
+      @error = true
+      puts "failed #{e}"
+    end
+
     @@stocks.push(add_stock)
     @@stock_added = true
     puts 'redirected'
