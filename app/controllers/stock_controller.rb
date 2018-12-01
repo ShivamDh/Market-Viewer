@@ -6,6 +6,7 @@ class StockController < ApplicationController
   @@cache_table_data = []
   @@cache_max = 1
   @@cache_min = 1
+  @@persisted_error = false
 
   def add_stock()
     add_stock = params[:id]
@@ -39,9 +40,35 @@ class StockController < ApplicationController
       end
       
       @@cached_data.push(chart_data)
-      puts "done adding"
+
+      begin
+        url_2 = 'https://query1.finance.yahoo.com/v1/finance/search?q=' + add_stock + '&quotesCount=1'
+        uri_2 = URI(url_2)
+        resp_2 = Net::HTTP.get(uri_2)
+        resp_json_2 = JSON.parse(resp_2)
+
+        stock_metadata = resp_json_2['quotes'][0]
+
+        table_info = {}
+        table_info['company'] = stock_metadata['shortname']
+        table_info['symbol'] = add_stock
+        table_info['type'] = stock_metadata['typeDisp']
+
+        first_key = chart_keys[0]
+        table_info['close_price'] = stock_info[first_key]['4. close']
+        table_info['change'] = (stock_info[first_key]['4. close'].to_f / base_val).round(4)
+        table_info['last_vol'] = (stock_info[first_key]['5. volume'].to_f / 1000000).round(5)
+        table_info['avg_vol'] = (all_vol / (stock_info.length * 1000000)).round(5)
+
+        @cached_table_data.push(table_info)
+      rescue => e2
+        @@persisted_error = true
+        puts "failed #{e2}"
+      end
+
+      puts "done done"
     rescue => e
-      @error = true
+      @@persisted_error = true
       puts "failed #{e}"
     end
 
