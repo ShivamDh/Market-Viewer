@@ -9,7 +9,7 @@ class StockController < ApplicationController
   @@persisted_error = false
 
   def add_stock()
-    add_stock = params[:id]
+    add_stock = params[:stock]
     puts 'add_stock func'
     puts add_stock
 
@@ -30,6 +30,9 @@ class StockController < ApplicationController
       base_val = stock_info[last_key]['4. close'].to_f
 
       all_vol = 0
+
+      prev_max = @@cache_max
+      prev_min = @@cache_min
       
       stock_info.each do |key, val|
         stock_value = val['4. close'].to_f / base_val
@@ -38,8 +41,16 @@ class StockController < ApplicationController
         chart_data['data'][key] = stock_value
         all_vol += val['5. volume'].to_f
       end
+
+      if @@cache_max != prev_max
+        @@cache_max += 0.05
+      end
+
+      if @@cache_min != prev_min
+        @@cache_min -= 0.05
+      end
       
-      @@cached_data.push(chart_data)
+      @@cache_data.push(chart_data)
 
       begin
         url_2 = 'https://query1.finance.yahoo.com/v1/finance/search?q=' + add_stock + '&quotesCount=1'
@@ -60,7 +71,7 @@ class StockController < ApplicationController
         table_info['last_vol'] = (stock_info[first_key]['5. volume'].to_f / 1000000).round(5)
         table_info['avg_vol'] = (all_vol / (stock_info.length * 1000000)).round(5)
 
-        @cached_table_data.push(table_info)
+        @@cache_table_data.push(table_info)
       rescue => e2
         @@persisted_error = true
         puts "failed #{e2}"
@@ -72,7 +83,10 @@ class StockController < ApplicationController
       puts "failed #{e}"
     end
 
-    @@stocks.push(add_stock)
+    if @@persisted_error == false
+      @@stocks.push(add_stock)
+    end
+
     @@stock_added = true
     puts 'redirected'
     redirect_to action: 'index'
@@ -108,6 +122,19 @@ class StockController < ApplicationController
       @table_data = @@cache_table_data
       @max = @@cache_max
       @min = @@cache_min
+    elsif @@stock_added
+        @@stock_added = false
+
+        if @@persisted_error
+          @error = true
+          @@persisted_error = false
+        else
+          @data = @@cache_data
+          @table_data = @@cache_table_data
+          @max = @@cache_max
+          @min = @@cache_min
+        end
+
     else
       begin
         @@stocks.each do |stock|
