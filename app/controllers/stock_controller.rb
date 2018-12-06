@@ -7,6 +7,7 @@ class StockController < ApplicationController
   @@cache_max = 1
   @@cache_min = 1
   @@persisted_error = false
+  @@stock_validation = false
 
   def add_stock()
     add_stock = params[:stock]
@@ -14,51 +15,58 @@ class StockController < ApplicationController
     puts add_stock
 
     begin
-      url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&apikey=GJW2HJK06R4D18XC&symbol=' + add_stock
-      uri = URI(url)
-      resp = Net::HTTP.get(uri)
-      resp_json = JSON.parse(resp)
+      url_2 = 'https://query1.finance.yahoo.com/v1/finance/search?q=' + add_stock + '&quotesCount=1'
+      uri_2 = URI(url_2)
+      resp_2 = Net::HTTP.get(uri_2)
+      resp_json_2 = JSON.parse(resp_2)
 
-      stock_info = resp_json["Time Series (Daily)"]
-      chart_data = {}
-      chart_data['name'] = add_stock
-      chart_data['data'] = {}
-      
-      chart_keys = stock_info.keys
-      chart_keys.sort
-      last_key = chart_keys[-1]
-      base_val = stock_info[last_key]['4. close'].to_f
+      stock_metadata_info = resp_json_2['quotes']
 
-      all_vol = 0
+      puts 'quotes'
+      puts stock_metadata_info.length
 
-      prev_max = @@cache_max
-      prev_min = @@cache_min
-      
-      stock_info.each do |key, val|
-        stock_value = val['4. close'].to_f / base_val
-        @@cache_max = stock_value > @@cache_max ? stock_value : @@cache_max
-        @@cache_min = stock_value < @@cache_min ? stock_value : @@cache_min
-        chart_data['data'][key] = stock_value
-        all_vol += val['5. volume'].to_f
-      end
+      if stock_metadata_info.length == 0
+        @@stock_validation = true
+      else
+        stock_metadata = stock_metadata_info[0]
+        
+        url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&apikey=GJW2HJK06R4D18XC&symbol=' + add_stock
+        uri = URI(url)
+        resp = Net::HTTP.get(uri)
+        resp_json = JSON.parse(resp)
 
-      if @@cache_max != prev_max
-        @@cache_max += 0.05
-      end
+        stock_info = resp_json["Time Series (Daily)"]
+        chart_data = {}
+        chart_data['name'] = add_stock
+        chart_data['data'] = {}
+        
+        chart_keys = stock_info.keys
+        chart_keys.sort
+        last_key = chart_keys[-1]
+        base_val = stock_info[last_key]['4. close'].to_f
 
-      if @@cache_min != prev_min
-        @@cache_min -= 0.05
-      end
-      
-      @@cache_data.push(chart_data)
+        all_vol = 0
 
-      begin
-        url_2 = 'https://query1.finance.yahoo.com/v1/finance/search?q=' + add_stock + '&quotesCount=1'
-        uri_2 = URI(url_2)
-        resp_2 = Net::HTTP.get(uri_2)
-        resp_json_2 = JSON.parse(resp_2)
+        prev_max = @@cache_max
+        prev_min = @@cache_min
+        
+        stock_info.each do |key, val|
+          stock_value = val['4. close'].to_f / base_val
+          @@cache_max = stock_value > @@cache_max ? stock_value : @@cache_max
+          @@cache_min = stock_value < @@cache_min ? stock_value : @@cache_min
+          chart_data['data'][key] = stock_value
+          all_vol += val['5. volume'].to_f
+        end
 
-        stock_metadata = resp_json_2['quotes'][0]
+        if @@cache_max != prev_max
+          @@cache_max += 0.05
+        end
+
+        if @@cache_min != prev_min
+          @@cache_min -= 0.05
+        end
+        
+        @@cache_data.push(chart_data)
 
         table_info = {}
         table_info['company'] = stock_metadata['shortname']
@@ -72,9 +80,6 @@ class StockController < ApplicationController
         table_info['avg_vol'] = (all_vol / (stock_info.length * 1000000)).round(5)
 
         @@cache_table_data.push(table_info)
-      rescue => e2
-        @@persisted_error = true
-        puts "failed #{e2}"
       end
 
       puts "done done"
@@ -87,7 +92,10 @@ class StockController < ApplicationController
       @@stocks.push(add_stock)
     end
 
-    @@stock_added = true
+    if @@stock_validation == false
+      @@stock_added = true
+    end
+
     puts 'redirected'
     redirect_to action: 'index'
   end
@@ -115,6 +123,7 @@ class StockController < ApplicationController
     @min = 1
 
     @table_data = []
+    @invalid_stock = false
 
     if @@stock_deleted
       @@stock_deleted = false
@@ -125,7 +134,9 @@ class StockController < ApplicationController
     elsif @@stock_added
         @@stock_added = false
 
-        if @@persisted_error
+        if @@stock_validation
+          @invalid_stock = true
+        elsif @@persisted_error
           @error = true
           @@persisted_error = false
         else
@@ -134,7 +145,6 @@ class StockController < ApplicationController
           @max = @@cache_max
           @min = @@cache_min
         end
-
     else
       begin
         @@stocks.each do |stock|
