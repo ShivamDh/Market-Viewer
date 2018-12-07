@@ -26,60 +26,46 @@ class StockController < ApplicationController
       puts stock_metadata_info.length
 
       if stock_metadata_info.length == 0
+        puts 'length is 0'
         @@stock_validation = true
       else
         stock_metadata = stock_metadata_info[0]
-        
-        url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&apikey=GJW2HJK06R4D18XC&symbol=' + add_stock
-        uri = URI(url)
-        resp = Net::HTTP.get(uri)
-        resp_json = JSON.parse(resp)
 
-        stock_info = resp_json["Time Series (Daily)"]
-        chart_data = {}
-        chart_data['name'] = add_stock
-        chart_data['data'] = {}
-        
-        chart_keys = stock_info.keys
-        chart_keys.sort
-        last_key = chart_keys[-1]
-        base_val = stock_info[last_key]['4. close'].to_f
+        if stock_metadata['quoteType'] != 'ETF' && stock_metadata['quoteType'] != 'EQUITY'
+          puts 'neither'
+          @@stock_validation = true
+        else
+          puts 'else'
+          url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&apikey=GJW2HJK06R4D18XC&symbol=' + add_stock
+          uri = URI(url)
+          resp = Net::HTTP.get(uri)
+          resp_json = JSON.parse(resp)
 
-        all_vol = 0
+          stock_info = resp_json["Time Series (Daily)"]
+          chart_data = {}
+          chart_data['name'] = add_stock
+          chart_data['data'] = {}
+          
+          chart_keys = stock_info.keys
+          chart_keys.sort
+          last_key = chart_keys[-1]
+          base_val = stock_info[last_key]['4. close'].to_f
 
-        prev_max = @@cache_max
-        prev_min = @@cache_min
-        
-        stock_info.each do |key, val|
-          stock_value = val['4. close'].to_f / base_val
-          @@cache_max = stock_value > @@cache_max ? stock_value : @@cache_max
-          @@cache_min = stock_value < @@cache_min ? stock_value : @@cache_min
-          chart_data['data'][key] = stock_value
-          all_vol += val['5. volume'].to_f
+          all_vol = 0
+
+          table_info = {}
+          table_info['company'] = stock_metadata['shortname']
+          table_info['symbol'] = add_stock
+          table_info['type'] = stock_metadata['typeDisp']
+
+          first_key = chart_keys[0]
+          table_info['close_price'] = stock_info[first_key]['4. close']
+          table_info['change'] = (stock_info[first_key]['4. close'].to_f / base_val).round(4)
+          table_info['last_vol'] = (stock_info[first_key]['5. volume'].to_f / 1000000).round(5)
+          table_info['avg_vol'] = (all_vol / (stock_info.length * 1000000)).round(5)
+
+          @@cache_table_data.push(table_info)
         end
-
-        if @@cache_max != prev_max
-          @@cache_max += 0.05
-        end
-
-        if @@cache_min != prev_min
-          @@cache_min -= 0.05
-        end
-        
-        @@cache_data.push(chart_data)
-
-        table_info = {}
-        table_info['company'] = stock_metadata['shortname']
-        table_info['symbol'] = add_stock
-        table_info['type'] = stock_metadata['typeDisp']
-
-        first_key = chart_keys[0]
-        table_info['close_price'] = stock_info[first_key]['4. close']
-        table_info['change'] = (stock_info[first_key]['4. close'].to_f / base_val).round(4)
-        table_info['last_vol'] = (stock_info[first_key]['5. volume'].to_f / 1000000).round(5)
-        table_info['avg_vol'] = (all_vol / (stock_info.length * 1000000)).round(5)
-
-        @@cache_table_data.push(table_info)
       end
 
       puts "done done"
@@ -92,9 +78,7 @@ class StockController < ApplicationController
       @@stocks.push(add_stock)
     end
 
-    if @@stock_validation == false
-      @@stock_added = true
-    end
+    @@stock_added = true
 
     puts 'redirected'
     redirect_to action: 'index'
