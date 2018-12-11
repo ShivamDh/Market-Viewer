@@ -2,11 +2,12 @@
 <h3 class="descrip"> View and analyze your favorite stocks</h3>
 
 <div class="container">
-  <% if @error %>
-    <div class="warning">Unable to render the charts, please referesh in 60 seconds</div>
-  <% end %>
-  <% if @data.length == 0 %>
+  <% if @invalid_stock %>
+    <div class="warning">Invalid Stock/ETF entered, please try again using the input below</div>
+  <% elsif @data.length == 0 %>
     <div class="warning">No Stocks selected, add stocks to view using the input below</div>
+  <% elsif @error %>
+    <div class="warning">Unable to render the charts, please referesh in 60 seconds</div>
   <% end %>
   <div class="chart">
     <%=
@@ -22,10 +23,12 @@
 
   <div class="table">
     <div class="add-stock-input">
-      Add Stock:
+      Add Stock/ETF:
       &nbsp;
-      <input type="text" name="add-stock" />
-      <%= button_to "Add", add_stock_path('GOOG'), class: 'add-icon' %>
+      <%= form_tag("stock/add_stock", method: "post") do %>
+        <%= text_field_tag(:stock) %>
+        <%= submit_tag("Add", :class=>"add-button") %>
+      <% end %>
     </div>
     <div class="stock-table-div">
       <table class="stock-table">

@@ -53,6 +53,27 @@ class StockController < ApplicationController
 
           all_vol = 0
 
+          prev_max = @@cache_max
+          prev_min = @@cache_min
+          
+          stock_info.each do |key, val|
+            stock_value = val['4. close'].to_f / base_val
+            @@cache_max = stock_value > @@cache_max ? stock_value : @@cache_max
+            @@cache_min = stock_value < @@cache_min ? stock_value : @@cache_min
+            chart_data['data'][key] = stock_value
+            all_vol += val['5. volume'].to_f
+          end
+
+          if @@cache_max != prev_max
+            @@cache_max += 0.05
+          end
+
+          if @@cache_min != prev_min
+            @@cache_min -= 0.05
+          end
+          
+          @@cache_data.push(chart_data)
+
           table_info = {}
           table_info['company'] = stock_metadata['shortname']
           table_info['symbol'] = add_stock
