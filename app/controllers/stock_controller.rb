@@ -11,8 +11,6 @@ class StockController < ApplicationController
 
   def add_stock()
     add_stock = params[:stock]
-    puts 'add_stock func'
-    puts add_stock
 
     begin
       url_2 = 'https://query1.finance.yahoo.com/v1/finance/search?q=' + add_stock + '&quotesCount=1'
@@ -22,17 +20,12 @@ class StockController < ApplicationController
 
       stock_metadata_info = resp_json_2['quotes']
 
-      puts 'quotes'
-      puts stock_metadata_info.length
-
       if stock_metadata_info.length == 0
-        puts 'length is 0'
         @@stock_validation = true
       else
         stock_metadata = stock_metadata_info[0]
 
         if stock_metadata['quoteType'] != 'ETF' && stock_metadata['quoteType'] != 'EQUITY'
-          puts 'neither'
           @@stock_validation = true
         else
           puts 'else'
