@@ -28,7 +28,6 @@ class StockController < ApplicationController
         if stock_metadata['quoteType'] != 'ETF' && stock_metadata['quoteType'] != 'EQUITY'
           @@stock_validation = true
         else
-          puts 'else'
           url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&apikey=GJW2HJK06R4D18XC&symbol=' + add_stock
           uri = URI(url)
           resp = Net::HTTP.get(uri)
@@ -81,8 +80,6 @@ class StockController < ApplicationController
           @@cache_table_data.push(table_info)
         end
       end
-
-      puts "done done"
     rescue => e
       @@persisted_error = true
       puts "failed #{e}"
@@ -94,20 +91,16 @@ class StockController < ApplicationController
 
     @@stock_added = true
 
-    puts 'redirected'
     redirect_to action: 'index'
   end
 
   def delete_stock()
     deleted_stock = params[:id]
-    puts 'delete_stock func'
-    puts deleted_stock
     deleted_index = @@stocks.index(deleted_stock)
     @@stocks.delete_at(deleted_index)
     @@cache_data.delete_at(deleted_index)
     @@cache_table_data.delete_at(deleted_index)
     @@stock_deleted = true
-    puts 'redirected'
     redirect_to action: 'index'
   end
 
@@ -200,9 +193,6 @@ class StockController < ApplicationController
           end
 
           @@cache_table_data = @table_data
-
-          puts "done done"
-
         end
         
       rescue => e
