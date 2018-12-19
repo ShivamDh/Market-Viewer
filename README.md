@@ -1,5 +1,7 @@
-# Rails-Sample-Project
+# Market Viewer
 
-This is an in-progress project that will build an interactive and easy-to-use web application for users to view stock markets.
+This is a Ruby on Rails project that will build an interactive and easy-to-use web application for users to view stock markets.
 
-#### The application will use Ruby on Rails, and several financial APIs to allow users to pick and choose statistics and trends from the current market
+Users can choose from various different stocks and ETFs from across the world, and view the relative change in price across time.
+
+### The application uses the Yahoo Finance API as well as Alphavantage to leverage both stock/ETF pricing info alongside company info
