@@ -4,4 +4,8 @@ This is a Ruby on Rails project that will build an interactive and easy-to-use w
 
 Users can choose from various different stocks and ETFs from across the world, and view the relative change in price across time.
 
-### The application uses the Yahoo Finance API as well as Alphavantage to leverage both stock/ETF pricing info alongside company info
+#### The application uses the Yahoo Finance API as well as Alphavantage to leverage both stock/ETF pricing info alongside company info
+
+Below is a screenshot of what the web application looks like:
+
+![App In Use Image](screenshots/screenshot.PNG)
